@@ -94,7 +94,6 @@ Engage, learn, and visualize with every word! 🔥""")
         
         bot.send_message(chat_id=message.chat.id, text="Let's see how good your language level is ...")
         language_level(message)
-        # bot.send_message(chat_id=message.chat.id, text="Select each buttons to start!",reply_markup=markup)
     else:
         markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         markup.add("🧠 Vocabulary Learning")
@@ -114,13 +113,6 @@ def language_level(message):
     intermediate  =  intermediate_sentences[y]
     advance  =  advanced_sentences[z]
     bot.send_message(chat_id=message.chat.id, text="<b>Please choose the sentence that you completely understand!</b>")
-#     bot.send_message(chat_id=message.chat.id, text=f"""sentence1️⃣: 
-# <code>{beginner}</code>                  
-# sentence2️⃣: 
-# <code>{intermediate}</code>
-# sentence3️⃣: 
-# <code>{advance}</code>       
-#                     """)
     keyboard = types.InlineKeyboardMarkup()
     
     button1 = types.InlineKeyboardButton(text='Sentence1️⃣', callback_data='beginner')
@@ -365,79 +357,12 @@ def answer_text(m):
     bot.delete_state(user_id=m.from_user.id, chat_id=m.chat.id)
 
 
-################ main functions ##################
-# @bot.message_handler(state=LearningStates.add_words)
-# def store_word(message):
-#     """Store the word entered by the user."""
-#     chat_id = message.chat.id
-#     word = message.text
-#     if chat_id not in user_data:
-#         user_data[chat_id] = {'user_words': []}  # ایجاد یک لیست خالی برای user_words
-#     user_data[chat_id]['user_words'].append(word)
-
-#     print(user_data[chat_id]['user_words'])
-#     # with mysql.connector.connect(**db_config) as connection:
-#     #     with connection.cursor() as cursor:
-#     #         sql = f'INSERT INTO data (words) VALUES ({words})'
-#     #         cursor.execute(sql)
-#     #         cursor.commit()
-#     # user_words.append(word)
-#     keyboard = types.InlineKeyboardMarkup()
-#     done_button = types.InlineKeyboardButton(text="Done", callback_data="done_words")
-#     keyboard.add(done_button)
-#     bot.send_message(chat_id=message.chat.id, text=f"You entered: {word}", reply_markup=keyboard)
-
-
-# @bot.callback_query_handler(func=lambda call: call.data == "done_words")
-# def done_words(call):
-#     """Handle the 'Done' button click after entering words."""
-#     chat_id = call.message.chat.id
-#     connection = mysql.connector.connect(**db_config)
-#     cursor = connection.cursor()
-#     sql = f"SELECT hobbies FROM data WHERE id = {chat_id}"
-#     cursor.execute(sql)
-#     result = cursor.fetchone()
-#     print(f"result: {result}")
-#     if result[0] is None:
-#         # sql1 = f"UPDATE data SET hobbies = '{user_data_hobb[chat_id]['selected_hobbies']}' WHERE id = {call.message.from_user.id}"
-#         # cursor.execute(sql1)
-#         # connection.commit()
-
-#         if chat_id in user_data:
-#             # Process the user's data here, for example, save it to a database or log it
-#             user_data[chat_id]['state'] = 'choose_hobbies'
-#             print(f"Words entered by user : {user_data[chat_id]['user_words']}")
-#             bot.delete_state(user_id=call.message.from_user.id, chat_id=call.message.chat.id)
-#             bot.set_state(user_id=call.message.from_user.id, state=LearningStates.choose_hobbies, chat_id=call.message.chat.id)
-#             display_hobbies(call.message)
-
-#         else:
-#             bot.send_message(chat_id=chat_id, text="No words were entered.")
-
-#     else:
-#         # if chat_id in user_data:
-#         if len(user_data[chat_id]['user_words']) >= 1 :
-#             sql = f"SELECT hobbies FROM data WHERE id = {chat_id}"
-#             cursor.execute(sql)
-#             hobbies = cursor.fetchone()[0]
-#             print(hobbies)
-#             # Process the user's data here, for example, save it to a database or log it
-#             bot.delete_state(user_id=call.message.from_user.id, chat_id=call.message.chat.id)
-#             bot.set_state(user_id=call.message.from_user.id, state=LearningStates.choose_series, chat_id=call.message.chat.id)
-#             done_hobbies(call,hobbies)
-#         else:
-#             bot.send_message(chat_id=chat_id, text="No words were entered.")
-
-
 
 
 @bot.message_handler(state=LearningStates.choose_hobbies)
 def display_hobbies(message):
     """Display the list of hobbies as inline keyboard buttons."""
     keyboard = types.InlineKeyboardMarkup()
-    # for hobby in hobbies:
-    #     button = types.InlineKeyboardButton(text=hobby, callback_data=hobby)
-    #     keyboard.add(button)
     button1 = types.InlineKeyboardButton(text='Game🎮', callback_data='Game')
     button2 = types.InlineKeyboardButton(text='Reading📖', callback_data='Reading')
     button3 = types.InlineKeyboardButton(text='Sports⛹️‍♂️', callback_data="Sports")
@@ -564,9 +489,7 @@ def display_series(message):
     print("display")
     """Display the list of series as inline keyboard buttons."""
     keyboard = types.InlineKeyboardMarkup()
-    # for hobby in series:
-    #     button = types.InlineKeyboardButton(text=hobby, callback_data=hobby)
-    #     keyboard.add(button)
+
     button11 = types.InlineKeyboardButton(text='Breaking Bad', callback_data='Breaking Bad')
     button12 = types.InlineKeyboardButton(text='Friends', callback_data='Friends')
     button13 = types.InlineKeyboardButton(text='Money Heist', callback_data="Money Heist")
@@ -700,7 +623,6 @@ def get_text(message , hobbies , series ):
         response = openai.Image.create(
         prompt=stories[0],
         n=1,
-        # temperature=0.8,
         size="1024x1024",
         quality="standard",
         model="dall-e-3",
@@ -725,21 +647,13 @@ def get_text(message , hobbies , series ):
             cursor = connection.cursor()
             print(message.from_user.id)
             sql = f"UPDATE data SET prompt = prompt + 1 WHERE id = {chat_id}"
-            # cursor.execute(sql)
-            # sql = f"SELECT prompt FROM data WHERE id = {message.from_user.id}"
             cursor.execute(sql)
-            # result = cursor.fetchone()
-            # pr = result[0]+1
-            # print(pr)
-            # print(message.from_user.id)
-            # sql = f"UPDATE data SET prompt = {pr} WHERE id = {message.from_user.id}"
             connection.commit()
             print("done prompt")
         except Exception as e:
             print(f"An error occurred: {e}")
         os.remove(filename)
         user_data[chat_id]['user_words'].clear()
-        # user_data_hobb[chat_id]['selected_hobbies'].clear()
         file.clear()
         stories.clear()
         urlss.clear()
@@ -758,8 +672,7 @@ Type /start to restart the bot""")
         print(f"{e}")
     bot.delete_state(user_id=message.from_user.id, chat_id=message.chat.id)
 ##########################################################
-def clear_prompt(user):
-    pass
+
 
 @bot.callback_query_handler(func= lambda call: True)
 def answer(call):
