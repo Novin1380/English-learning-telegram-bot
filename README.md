@@ -1,6 +1,6 @@
 # English-learning-bot
 <h1 align="center">English Learning Telegram Bot</h1> 
-<h2 align="center">Here is a personalized learning telegram bot written with telebot and it uses<strong> GPT-4 and DALL-E3 </strong>to generate story and image from words that you choosed to learn form your level</h2>
+<h4 align="center">Here is a personalized learning telegram bot written with telebot and it uses<strong> GPT-4 and DALL-E3 </strong>to generate story and image from words that you choosed to learn form your level</h4>
 
 
 ### Overview
@@ -32,7 +32,7 @@
 ### Demo
 This is a brief demo of how does project works!
 <p align="center">
-<img src="https://github.com/Novin1380/English-learning-telegram-bot/blob/main/demo/Demo.mp4" alt="demo" width="300/>
+<video src="https://github.com/Novin1380/English-learning-telegram-bot/blob/main/demo/Demo.mp4" alt="demo" width="300/>
 </p>
 
 
