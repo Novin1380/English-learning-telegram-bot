@@ -32,7 +32,7 @@
 ### Demo
 This is a brief demo of how does project works!
 <p align="center">
-<video src="https://github.com/Novin1380/English-learning-telegram-bot/blob/main/demo/Demo.mp4" alt="demo" width="300/>
+<video src="https://github.com/Novin1380/English-learning-telegram-bot/blob/main/demo/Demo.mp4" alt="demo" width="300"/>
 </p>
 
 
