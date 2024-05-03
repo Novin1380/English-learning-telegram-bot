@@ -32,14 +32,14 @@
 ### Demo
 This is a brief demo of how does project works!
 <p align="center">
-<video src="https://github.com/Novin1380/English-learning-telegram-bot/blob/main/demo/Demo.mp4" alt="demo" width="300"/>
+<video src="https://github.com/Novin1380/English-learning-telegram-bot/blob/main/demo/Demo.mp4" alt="demo" >
 </p>
 
 
 ### Database schema
 A simple view of the project database code for creating database
 <p align="center">
-<img src="https://github.com/Novin1380/English-learning-telegram-bot/blob/main/demo/sql-code.png" alt="database code" width="600"/>
+<img src="https://github.com/Novin1380/English-learning-telegram-bot/blob/main/demo/sql-code.png" alt="database code" width="300"/>
 </p>
 
 ### features
