@@ -1,0 +1,6 @@
+requests
+re
+random
+telebot
+openai==0.27.5
+mysql-connector-python
