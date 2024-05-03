@@ -29,9 +29,6 @@ english_levels = ['beginner', 'intermediate', 'advance']
 
 
 ## Data Base Configuration
-
-
-
 user_data = {}
 user_data_hobb = {}
 user_data_ser = {}
@@ -40,7 +37,7 @@ user_prompt = {}
 
 
 
-## This section is for managing states
+## This section is for managing states of learning words
 class LearningStates(StatesGroup):
     add_words = State()
     choose_hobbies = State()
@@ -50,7 +47,7 @@ class LearningStates(StatesGroup):
     random_words = State()
 
 
-
+## This section is for managing states of accounts
 class accounts(StatesGroup):
     accs = State()
 
@@ -80,7 +77,6 @@ def start(message):
     if result is None:
         sql = f'INSERT INTO data (id) VALUES ({message.from_user.id})'
         cursor.execute(sql)
-    # sql1 = f'INSERT INTO data (usename) VALUES ({message.from_user.first_name})'
         sql1 = f"UPDATE data SET usename = '{message.from_user.first_name}' WHERE id = {message.from_user.id}"
         cursor.execute(sql1)
         connection.commit()
