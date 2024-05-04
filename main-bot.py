@@ -150,6 +150,44 @@ def level_handler(call):
     
     
 
+##################### Support Functions #####################
+@bot.message_handler(func= lambda m: m.text == "☎️ Support")
+def sup(m):
+    bot.delete_state(user_id=m.from_user.id, chat_id=m.chat.id)
+    bot.send_message(chat_id=m.chat.id, text="Please send your message:")
+
+    bot.set_state(user_id=m.from_user.id, state=Support.text, chat_id=m.chat.id)
+
+
+@bot.message_handler(state=Support.text)
+def sup_text(m):
+    markup = InlineKeyboardMarkup()
+    markup.add(InlineKeyboardButton(text="Answer", callback_data=m.chat.id))
+
+    bot.send_message(chat_id=103148378, text=f"Recived a message from <code>{m.from_user.id}</code> with username @{m.from_user.username}:\nMessage text:\n\n<b>{escape_special_characters(m.text)}</b>", reply_markup=markup, parse_mode="HTML")
+
+    bot.send_message(chat_id=m.chat.id, text="Your message was sent to admin!")
+
+    texts[m.from_user.id] = m.text
+
+    bot.delete_state(user_id=m.from_user.id, chat_id=m.chat.id)
+
+
+
+@bot.message_handler(state=Support.respond)
+def answer_text(m):
+    chat_id = chat_ids[-1]
+
+    if chat_id in texts:
+        bot.send_message(chat_id=chat_id, text=f"Your message:\n<i>{escape_special_characters(texts[chat_id])}</i>\n\nSupport answer:\n<b>{escape_special_characters(m.text)}</b>", parse_mode="HTML")
+        bot.send_message(chat_id=m.chat.id, text="Your answer was sent!")
+
+        del texts[chat_id]
+        chat_ids.remove(chat_id)
+    else:
+        bot.send_message(chat_id=m.chat.id, text="Something went wrong. Please try again...")
+
+    bot.delete_state(user_id=m.from_user.id, chat_id=m.chat.id)
 
 
 ################ My account button details #################
@@ -209,26 +247,23 @@ def Learning_words(message):
     if result[0] == 0:
         bot.send_message(chat_id=message.chat.id, text=f"""Hello <b>{message.from_user.first_name}</b>, welcome to <b>Vocabulary Learning bot</b> 💫
 
-<b>Explore Language with Story AI Bot</b>✨️
 In this section, based on the information you've shared about yourself, we'll recommend words that are appropriate for your language level and can help you improve your vocabulary.
 
 <b>Our learning method involves creating stories accompanied by images to help you solidify the words in your mind.</b>
 
 just enjoy🔥""")
-        
 
-        bot.send_message(chat_id=message.chat.id, text="""Based on your english level, I recommend you to learn the following words:""" )
+
     else :
-        bot.send_message(chat_id=message.chat.id, text="""Based on your english level, I recommend you to learn the following words:""" )
-        
-    try: 
+        bot.send_message(chat_id=message.chat.id, text="""Welcome to Vocabulary Learning bot!""" )
+
+    try:
         sql = f"SELECT level FROM data WHERE id = {message.from_user.id}"
         cursor.execute(sql)
         result1 = cursor.fetchone()[0]
         print(result1)
         if not result1 is None :
             print("HI")
-            bot.set_state(user_id=message.from_user.id, state=LearningStates.random_words, chat_id=message.chat.id)
             if result1 == "beginner":
                 display_word_options(message, beginner_words)
             elif result1 == "intermediate":
@@ -244,7 +279,7 @@ just enjoy🔥""")
     except Exception as e:
         print(f"{e}")
 
-        
+
 def display_word_options(message, word_list):
     print("done")
     bot.set_state(user_id=message.from_user.id, state=LearningStates.random_words, chat_id=message.chat.id)
@@ -252,28 +287,57 @@ def display_word_options(message, word_list):
     word_keyboard = telebot.types.InlineKeyboardMarkup()
 
     # Randomly select 10 words from the word list
-    selected_words_from_list = random.sample(word_list, 10)
-
+    selected_words_from_list = random.sample(word_list, 5)
+    words = message.text
     # Add the words to the keyboard markup
     for word in selected_words_from_list:
         button = telebot.types.InlineKeyboardButton(text=word, callback_data=word)
         word_keyboard.add(button)
+
 
     # Add the "Done" button to the keyboard markup
     done_button = telebot.types.InlineKeyboardButton(text="Done✅", callback_data="done3")
     word_keyboard.add(done_button)
 
     # Send the keyboard markup
-    bot.send_message(chat_id=message.chat.id, text="""Please select the word(s) whose meaning you dont know!
-                     
+    bot.send_message(chat_id=message.chat.id, text="""Based on your language level, I recommend you to learn the following words!
+<b>You can also enter the words that you have a problem with, for me!</b>
+
 When you're done entering words, click the 'Done✅' button to proceed.""", reply_markup=word_keyboard)
-            
+    if words:
+        chat_id = message.chat.id
+        print(words)
+        bot.delete_state(user_id=message.from_user.id, chat_id=message.chat.id)
+        bot.set_state(user_id=message.from_user.id, state=LearningStates.add_words, chat_id=message.chat.id)
+        store_word(message)
+        
+    
+
+
+@bot.message_handler(state=LearningStates.add_words)
+def store_word(message):
+    """Store the word entered by the user."""
+    chat_id = message.chat.id
+    words = message.text
+    if chat_id not in user_data:
+        user_data[chat_id] = {'user_words': []}  # ایجاد یک لیست خالی برای user_words
+    if words == "🧠 Vocabulary Learning":
+        print("HEH")
+    else:
+        user_data[chat_id]['user_words'].append(words)
+        print(user_data[chat_id]['user_words'])
+        keyboard = types.InlineKeyboardMarkup()
+        done_button = types.InlineKeyboardButton(text="Done", callback_data="donee")
+        keyboard.add(done_button)
+        bot.send_message(chat_id=message.chat.id, text=f"You entered: {words}", reply_markup=keyboard)
+        
+    
+
 # Handle the callback queries for word selection
 @bot.callback_query_handler(func=lambda call: call.data in beginner_words + intermediate_words + advanced_words)
 def handle_word_selection(call):
     chat_id = call.message.chat.id
     word = call.data
-    
     if chat_id not in user_data:
         user_data[chat_id] = {'user_words': []}  # ایجاد یک لیست خالی برای user_words
     if word in user_data[chat_id]['user_words']:
@@ -282,11 +346,11 @@ def handle_word_selection(call):
     else:
         user_data[chat_id]['user_words'].append(word)
         bot.answer_callback_query(call.id, text=f"{word} added to your words selection.")
-    
-    
+
+
 
 # Handle the "Done" callback query
-@bot.callback_query_handler(func=lambda call: call.data == "done3")
+@bot.callback_query_handler(func=lambda call: call.data == "done3" or "donee")
 def handle_done(call):
     chat_id = call.message.chat.id
     connection = mysql.connector.connect(**db_config)
@@ -311,46 +375,6 @@ def handle_done(call):
 
 
 
-
-
-##################### Support Functions #####################
-@bot.message_handler(func= lambda m: m.text == "☎️ Support")
-def sup(m):
-    bot.delete_state(user_id=m.from_user.id, chat_id=m.chat.id)
-    bot.send_message(chat_id=m.chat.id, text="Please send your message:")
-
-    bot.set_state(user_id=m.from_user.id, state=Support.text, chat_id=m.chat.id)
-
-
-@bot.message_handler(state=Support.text)
-def sup_text(m):
-    markup = InlineKeyboardMarkup()
-    markup.add(InlineKeyboardButton(text="Answer", callback_data=m.chat.id))
-
-    bot.send_message(chat_id=103148378, text=f"Recived a message from <code>{m.from_user.id}</code> with username @{m.from_user.username}:\nMessage text:\n\n<b>{escape_special_characters(m.text)}</b>", reply_markup=markup, parse_mode="HTML")
-
-    bot.send_message(chat_id=m.chat.id, text="Your message was sent to admin!")
-
-    texts[m.from_user.id] = m.text
-
-    bot.delete_state(user_id=m.from_user.id, chat_id=m.chat.id)
-
-
-
-@bot.message_handler(state=Support.respond)
-def answer_text(m):
-    chat_id = chat_ids[-1]
-
-    if chat_id in texts:
-        bot.send_message(chat_id=chat_id, text=f"Your message:\n<i>{escape_special_characters(texts[chat_id])}</i>\n\nSupport answer:\n<b>{escape_special_characters(m.text)}</b>", parse_mode="HTML")
-        bot.send_message(chat_id=m.chat.id, text="Your answer was sent!")
-
-        del texts[chat_id]
-        chat_ids.remove(chat_id)
-    else:
-        bot.send_message(chat_id=m.chat.id, text="Something went wrong. Please try again...")
-
-    bot.delete_state(user_id=m.from_user.id, chat_id=m.chat.id)
 
 
 
@@ -657,14 +681,14 @@ def get_text(message , hobbies , series ):
 
         print("All things cleared")
         bot.delete_state(user_id=message.from_user.id, chat_id=message.chat.id)
-        bot.send_message(chat_id=message.chat.id, text="Type /start to start again! ")
+        bot.send_message(chat_id=message.chat.id, text="Choose button to start again!")
 
     except Exception as e:
         bot.delete_state(user_id=message.from_user.id, chat_id=message.chat.id)
         bot.send_message(chat_id=message.chat.id, text="""<b>Something went wrong!</b>
 
 
-Type /start to restart the bot""")
+You can choose the button again to restart the process""")
         print(f"{e}")
     bot.delete_state(user_id=message.from_user.id, chat_id=message.chat.id)
 ##########################################################
