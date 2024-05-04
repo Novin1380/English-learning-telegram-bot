@@ -87,4 +87,8 @@ Feel free to let me know if there are any problems or any request you have for t
 
 <h3 align="center" color="red">In the future I will complete this project and make new features</h3>
 
+
+<h6 align="center">be kind with each other and share your problems solution to makes better world!</h6>
+
+
 <h5 align="center">just enjoy! 👋</h5>
